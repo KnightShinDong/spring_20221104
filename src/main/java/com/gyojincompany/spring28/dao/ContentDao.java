@@ -1,9 +1,19 @@
 package com.gyojincompany.spring28.dao;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
-public class ContentDao {
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.PreparedStatementSetter;
+
+import com.gyojincompany.spring28.dto.ContentDto;
+
+public class ContentDao implements IDao {
 
 		JdbcTemplate template;
 		
@@ -11,7 +21,77 @@ public class ContentDao {
 		public void setTemplate(JdbcTemplate template) {
 			this.template = template;
 		}
+
+		@Override
+		public void deleteDao(final String mid) {
+			// TODO Auto-generated method stub
+			String sql = "DELETE FROM board WHERE mid=?";
+			
+			this.template.update(sql, new PreparedStatementSetter() {
+				
+				@Override
+				public void setValues(PreparedStatement pstmt) throws SQLException {
+					// TODO Auto-generated method stub
+				pstmt.setString(1, mid);	
+				
+				}
+			});
+				
+							
+			}
+
+		@Override
+		public void writeDao(final String mwriter, final String mcontent) {
+			// TODO Auto-generated method stub
+			
+			this.template.update(new PreparedStatementCreator() {
+				
+				@Override
+				public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+					// TODO Auto-generated method stub
+					String sql = "INSERT INTO board(mid, mwriter, mcontent) VALUES (BOARD_SEQ.nextval, ?, ?)";
+					PreparedStatement pstmt = con.prepareStatement(sql);
+					
+					pstmt.setString(1, mwriter);
+					pstmt.setString(2, mcontent);
+					
+					
+					return pstmt;
+				}
+			});
+		}
+
+		@Override
+		public ArrayList<ContentDto> listDao() {
+			// TODO Auto-generated method stub
+			
+			String sql = "SELECT * FROM board ORDER BY mid DESC";
+			
+			
+			ArrayList<ContentDto> dtos = (ArrayList<ContentDto>) template.query(sql, new BeanPropertyRowMapper(ContentDto.class));
+			
+			return dtos;
+		}
 		
+		public void modify(final String mwrite,final String mcontent, final String mid) {
+			
+			String sql = "UPDATE board SET mwrite=?, mcontent=? WHERE mid=?";
+			
+			this.template.update(sql, new PreparedStatementSetter() {
+				
+				@Override
+				public void setValues(PreparedStatement pstmt) throws SQLException {
+					// TODO Auto-generated method stub
+					
+					pstmt.setString(1, mwrite);
+					pstmt.setString(2, mcontent);
+					pstmt.setString(3, mid);
+					
+					
+				}
+			});
+		
+		}	
 		
 }
 		
