@@ -31,6 +31,10 @@
 	<beans:bean name="template" class="org.springframework.jdbc.core.JdbcTemplate">
 		<beans:property name="dataSource" ref="dataSource"></beans:property>
 	</beans:bean>
+	<beans:bean name="dao" class="com.gyojincompany.spring28.dao.ContentDao">
+		<beans:property name="template" ref="template"></beans:property>
+	</beans:bean>
+	
 	
 	
 	<context:component-scan base-package="com.gyojincompany.spring28" />
